@@ -53,9 +53,17 @@ pub fn recognize_song_from_signature(signature: &DecodedSignature) -> Result<Val
         .headers(headers)
         .json(&post_data)
         .send()?;
-    
-    Ok(response.json()?)
-    
+
+    match response.status() {
+        reqwest::StatusCode::OK => {
+            return Ok(response.json()?)
+        },
+
+        s => {
+            println!("Unexpected status code: {:?}", s)
+        },
+    }
+
 }
 
 pub fn obtain_raw_cover_image(url: &str) -> Result<Vec<u8>, Box<dyn Error>> {
